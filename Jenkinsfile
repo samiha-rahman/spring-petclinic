@@ -19,6 +19,7 @@ pipeline {
             exit 0
           }
         }
+      }
     }
       
     stage('Build') {
