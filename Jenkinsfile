@@ -6,6 +6,7 @@ pipeline {
         not {branch 'master'}
       }
       steps {
+        error("Not on the master branch!")
         exit 0
       }
     }
@@ -14,6 +15,7 @@ pipeline {
       steps {
         script {
           int commits = sh(returnStdout: true, script: "git rev-list master --count origin/master")
+          if (
           if (!(commits % 8 == 0)){
             error("Not the 8th commit!")
             exit 0
@@ -39,20 +41,14 @@ pipeline {
         sh 'mvn package'
       }
     }
-    
-    stage('Deploy') {
-      when {
-        branch 'master'
-      }
-      steps {
-        sh 'mvn package'
-      }
-    }
   }
     
   post {
     failure {
         slackSend (color: 'danger', message: "FAILED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
+        sh "git bisect start ${BROKEN} ${STABLE}"
+        sh "git bisect run mvn clean test"
+        sh "git bisect reset"
     }
     success {
         slackSend (color: 'good', message: "PASSED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
