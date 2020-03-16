@@ -30,14 +30,10 @@ pipeline {
   }
   post {
     failure {
-        mail to: 'hellosamiha@gmail.com',
-             subject: "Failed Pipeline: ${currentBuild.fullDisplayName}",
-             body: "Something is wrong with ${env.BUILD_URL}"
+        slackSend (color: 'danger', message: "FAILED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
     }
     success {
-        mail to: 'hellosamiha@gmail.com',
-             subject: "Passing Pipeline: ${currentBuild.fullDisplayName}",
-             body: "Everything is good with ${env.BUILD_URL}"
+        slackSend (color: 'good', message: "PASSED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
     }
 }
 }
