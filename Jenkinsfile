@@ -15,7 +15,6 @@ pipeline {
       steps {
         script {
           int commits = sh(returnStdout: true, script: "git rev-list master --count origin/master")
-          if (
           if (!(commits % 8 == 0)){
             error("Not the 8th commit!")
             exit 0
